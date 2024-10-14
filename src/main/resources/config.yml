@@ -1,0 +1,3 @@
+monsters_drop_ender_pearls: false # whether monsters should drop ender pearls on death
+monster_ender_pearl_drop_chance: 35 # the chance of a pearl dropping is 1 out of this number (default is 1 in 35)
+
