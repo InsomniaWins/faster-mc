@@ -6,13 +6,9 @@ import wins.insomnia.fastermc.eventlisteners.PlayerEvents;
 
 public final class FasterMC extends JavaPlugin {
 
-    private static FasterMC instance = null;
-
 
     @Override
     public void onEnable() {
-
-        instance = this;
 
         saveDefaultConfig();
 
@@ -31,6 +27,6 @@ public final class FasterMC extends JavaPlugin {
     }
 
     public static FasterMC getInstance() {
-        return instance;
+        return getPlugin(FasterMC.class);
     }
 }
