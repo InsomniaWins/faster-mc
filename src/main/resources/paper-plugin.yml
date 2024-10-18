@@ -1,4 +1,4 @@
 name: FasterMC
-version: '1.0'
+version: '1.1'
 main: wins.insomnia.fastermc.FasterMC
 api-version: '1.21'
