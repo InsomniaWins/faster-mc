@@ -12,6 +12,8 @@ import org.bukkit.generator.structure.Structure;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.util.StructureSearchResult;
+import wins.insomnia.fastermc.FasterMC;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,22 +25,26 @@ public class CompassEvents {
 
 		ITEM_STRUCTURE_MAP.put(Material.NETHER_BRICKS, new ItemStructureMapEntry(
 				new World.Environment[] {World.Environment.NETHER},
-				(player) -> Structure.FORTRESS
+				(player) -> Structure.FORTRESS,
+				"compass_can_locate_nether_fortresses"
 		));
 
 		ITEM_STRUCTURE_MAP.put(Material.GOLD_BLOCK, new ItemStructureMapEntry(
 				new World.Environment[] {World.Environment.NETHER},
-				(player) -> Structure.BASTION_REMNANT
+				(player) -> Structure.BASTION_REMNANT,
+				"compass_can_locate_bastion_remnants"
 		));
 
 		ITEM_STRUCTURE_MAP.put(Material.COAL_BLOCK, new ItemStructureMapEntry(
 				new World.Environment[] {World.Environment.NORMAL},
-				(player) -> Structure.MINESHAFT
+				(player) -> Structure.MINESHAFT,
+				"compass_can_locate_mineshafts"
 		));
 
 		ITEM_STRUCTURE_MAP.put(Material.DIAMOND, new ItemStructureMapEntry(
 				new World.Environment[] {World.Environment.NORMAL},
-				(player) -> Structure.BURIED_TREASURE
+				(player) -> Structure.BURIED_TREASURE,
+				"compass_can_locate_buried_treasure"
 		));
 
 		ITEM_STRUCTURE_MAP.put(Material.EMERALD, new ItemStructureMapEntry(
@@ -80,7 +86,8 @@ public class CompassEvents {
 					} else {
 						return Structure.VILLAGE_PLAINS;
 					}
-				}
+				},
+				"compass_can_locate_villages"
 		));
 	}
 
@@ -106,6 +113,13 @@ public class CompassEvents {
 
 	public static void onCompassRightClicked(PlayerInteractEvent event) {
 
+
+		// check config for compass functionality
+		if (!FasterMC.getInstance().getConfig().getBoolean("compass_can_locate_structures")) {
+			return;
+		}
+
+
 		final int COMPASS_COOLDOWN = 100;
 		final int SEARCH_RADIUS = 500;
 
@@ -122,6 +136,15 @@ public class CompassEvents {
 		ItemStructureMapEntry itemStructureMapEntry = ITEM_STRUCTURE_MAP.get(itemType);
 		Structure structure = itemStructureMapEntry.structureProvider.getStructure(player);
 		String structureName = structure.key().asString();
+
+
+		// check config for specific structure
+		if (itemStructureMapEntry.configString == null || itemStructureMapEntry.configString.isEmpty()) {
+			return;
+		}
+		if (!FasterMC.getInstance().getConfig().getBoolean(itemStructureMapEntry.configString)) {
+			return;
+		}
 
 
 		// check dimension

@@ -1,3 +1,12 @@
-monsters_drop_ender_pearls: false # whether monsters should drop ender pearls on death
+monsters_drop_ender_pearls: true # whether monsters should drop ender pearls on death
 monster_ender_pearl_drop_chance: 35 # the chance of a pearl dropping is 1 out of this number (default is 1 in 35)
 
+compass_can_locate_structures: true # whether the compass can locate structures when an item is held in the off-hand
+
+#region   THE FOLLOWING ONLY WORK WHEN 'compass_can_locate_structures' IS TRUE
+compass_can_locate_nether_fortresses: true # whether the compass can locate nether fortresses
+compass_can_locate_bastion_remnants: true # whether the compass can locate bastion remnants
+compass_can_locate_buried_treasure: true # whether the compass can locate buried treasure
+compass_can_locate_mineshafts: true # whether the compass can locate mineshafts
+compass_can_locate_villages: true # whether the compass can locate villages
+#endregion
