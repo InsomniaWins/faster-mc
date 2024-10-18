@@ -13,10 +13,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.util.StructureSearchResult;
 import wins.insomnia.fastermc.FasterMC;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CompassEvents {
 
@@ -109,7 +109,31 @@ public class CompassEvents {
 		return Component.text(messageString.toString());
 	}
 
+	public static List<Component> getCompassLore(Player player) {
+		ArrayList<Component> loreList = new ArrayList<>();
+		loreList.add(Component.text("Valid off-hand items:"));
 
+		int i = 1;
+		for (Map.Entry<Material, ItemStructureMapEntry> entry : ITEM_STRUCTURE_MAP.entrySet()) {
+
+			Material material = entry.getKey();
+			ItemStructureMapEntry mapEntry = entry.getValue();
+
+			if (FasterMC.getInstance().getConfig().getBoolean(mapEntry.configString)) {
+
+				String itemName = material.getKey().asMinimalString();
+				String structureName = mapEntry.structureProvider.getStructure(player).key().asMinimalString();
+				String colorString = i % 2 == 0 ? "§6" : "§e";
+				String appendString = colorString + i + ") " + itemName + " → " + structureName;
+				loreList.add(Component.text(appendString));
+
+				i += 1;
+			}
+
+		}
+
+		return loreList;
+	}
 
 	public static void onCompassRightClicked(PlayerInteractEvent event) {
 
@@ -126,16 +150,30 @@ public class CompassEvents {
 		Player player = event.getPlayer();
 
 		player.setCooldown(Material.COMPASS, COMPASS_COOLDOWN);
-		Material itemType = player.getInventory().getItemInOffHand().getType();
 
+		if (player.getInventory().getItemInOffHand().isEmpty()) {
+			ItemStack itemStack = player.getInventory().getItemInMainHand();
+			CompassMeta compassMeta = (CompassMeta) itemStack.getItemMeta();
+			compassMeta.lore(CompassEvents.getCompassLore(player));
+			itemStack.setItemMeta(compassMeta);
+			return;
+		}
+
+		// if invalid offhand item type, tell player valid types
+		Material itemType = player.getInventory().getItemInOffHand().getType();
 		if (!ITEM_STRUCTURE_MAP.containsKey(itemType)) {
+			player.sendMessage(Component.text("You need to put an item in your off-hand to locate a structure with the compass. You can find a list by highlighting the compass with your mouse."));
+			ItemStack itemStack = player.getInventory().getItemInMainHand();
+			CompassMeta compassMeta = (CompassMeta) itemStack.getItemMeta();
+			compassMeta.lore(CompassEvents.getCompassLore(player));
+			itemStack.setItemMeta(compassMeta);
 			return;
 		}
 
 
 		ItemStructureMapEntry itemStructureMapEntry = ITEM_STRUCTURE_MAP.get(itemType);
 		Structure structure = itemStructureMapEntry.structureProvider.getStructure(player);
-		String structureName = structure.key().asString();
+		String structureName = structure.key().asMinimalString();
 
 
 		// check config for specific structure
@@ -193,13 +231,7 @@ public class CompassEvents {
 
 
 					// compass item name
-					StringBuilder formattedStructureName = new StringBuilder(structureName);
-					for (int i = 0; i < formattedStructureName.length(); i++) {
-						if (i == 0 || formattedStructureName.charAt(i - 1) == ' ') {
-							formattedStructureName.setCharAt(i, Character.toUpperCase(formattedStructureName.charAt(i)));
-						}
-					}
-					itemMeta.displayName(Component.text("§fStructure: " + formattedStructureName));
+					itemMeta.displayName(Component.text("§fStructure: " + structureName));
 
 
 					// make compass work in nether

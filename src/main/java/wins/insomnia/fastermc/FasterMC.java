@@ -2,6 +2,7 @@ package wins.insomnia.fastermc;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import wins.insomnia.fastermc.eventlisteners.EntityEvents;
+import wins.insomnia.fastermc.eventlisteners.InventoryEvents;
 import wins.insomnia.fastermc.eventlisteners.PlayerEvents;
 
 public final class FasterMC extends JavaPlugin {
@@ -19,6 +20,8 @@ public final class FasterMC extends JavaPlugin {
         PlayerEvents playerEventsListenerInstance = new PlayerEvents();
         getServer().getPluginManager().registerEvents(playerEventsListenerInstance, this);
 
+        InventoryEvents inventoryEvents = new InventoryEvents();
+        getServer().getPluginManager().registerEvents(inventoryEvents, this);
 
     }
 
